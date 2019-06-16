@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 
+import io, os, sys
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import call
 
-import os, sys
 __dirname = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(0, os.path.join(__dirname, '../src'))
+sys.path.append(os.path.join(__dirname, '../src'))
 import cf_accesslog as AL
-
-import io
 
 
 class TestAccessLogModule(unittest.TestCase):
