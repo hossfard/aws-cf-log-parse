@@ -39,6 +39,29 @@ def is_valid_cf_logkey(key):
     return (re.search('^\w{5,20}\.\d{4}-\d{2}-\d{2}-\d{2}\.\w{8}\.gz', key) != None)
 
 
+def list_cf_logkeys(s3, bucket : str):
+    '''Return the list of S3 keys under `bucket` representing CF access logs
+
+    This is almost similar to running following AWS CLI command
+
+    > aws s3api list-objects-v2 --bucket <bucket-name>
+
+    Given the response, this method filters out the returned keys
+    to what it deems to be valid accesslog data using only the
+    names
+
+    It will return only the first 1000 if there are more keys.
+
+    @param {S3.Client} s3 AWS S3 client
+    @param {str} bucket AWS S3 bucket name
+    @return {list} list of keys representing CF logs, maxed out at 1000
+    '''
+    response = s3.list_objects_v2(Bucket=bucket)
+    contents = response.get('Contents', [])
+    ret = []
+    return [obj['Key'] for obj in contents if (is_valid_cf_logkey(obj['Key']))]
+
+
 class DataStoreS3(DataStoreBase):
     '''GZipped local data store, accessible by date in YYYY-mm-dd format
 
