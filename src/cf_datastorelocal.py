@@ -74,3 +74,17 @@ class DataStoreLocal(DataStoreBase):
         p = os.path.join(self.db_dir, '**/*.gz')
         return glob.glob(p, recursive=True)
 
+    def delete(self, key : str):
+        ''' Remove records associated with `key`, if any
+
+        @param {str} key key identifying the access log
+        @return {bool} True if successful, false otherwise
+        '''
+        if not os.path.exists(key):
+            return False
+
+        try:
+            os.remove(key)
+        except:
+            return False
+        return true
