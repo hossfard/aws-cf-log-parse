@@ -120,7 +120,7 @@ class TestDataStoreS3Class(unittest.TestCase):
         self.assertEqual(store.item_key(row),
                          '2019/01/2019-01-02.gz')
 
-    # TODO
+    # Test s3.put_object gets invoked with write arguments
     def test_overwrite(self):
         bucket_name = 'foo-bar'
         store = DataStoreS3(bucket=bucket_name, session=self.session)
