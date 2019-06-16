@@ -36,7 +36,8 @@ def is_valid_cf_logkey(key):
     @return {boolean} true if key is log file, false otherwise
     '''
 
-    return (re.search('^\w{5,20}\.\d{4}-\d{2}-\d{2}-\d{2}\.\w{8}\.gz', key) != None)
+    # Allow the [distribution id] to occur with a prefix
+    return (re.search('\w{6,20}\.\d{4}-\d{2}-\d{2}-\d{2}\.\w{8}\.gz', key) != None)
 
 
 def list_cf_logkeys(s3, bucket : str, prefix : str = ''):
