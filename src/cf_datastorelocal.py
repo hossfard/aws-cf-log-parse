@@ -1,4 +1,4 @@
-import os, gzip
+import os, gzip, glob
 import cf_accesslog as AL
 from cf_datastore import DataStoreBase
 from cf_accesslog import AccessLog
@@ -21,8 +21,6 @@ class DataStoreLocal(DataStoreBase):
         @param TODO
         @return
         '''
-        p = self.item_path_from_date(key)
-        fd = gzip.open(p, 'r')
         fd = gzip.open(key, 'r')
         return AccessLog.load(fd)
 
@@ -54,4 +52,4 @@ class DataStoreLocal(DataStoreBase):
     # untested
     def delete(self, key):
         # TODO
-        pass
+        return False

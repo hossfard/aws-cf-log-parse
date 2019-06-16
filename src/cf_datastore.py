@@ -6,6 +6,10 @@ from cf_accesslog import AccessLog
 
 
 class DataStoreBase(abc.ABC):
+    '''Base cloudfront accesslog data store
+
+    '''
+
     def __init__(self):
         return
 
@@ -13,9 +17,13 @@ class DataStoreBase(abc.ABC):
     def access_log(self, key : str):
         '''Return access-log data associated with key
 
-        @param {AccessLog}
+        @sa item_key
+        @param {str} key key used to identifiy access log record
+        @return {AccessLog} acesslog record associated with the key,
+                if any
+
         '''
-        return
+        return None
 
     @abc.abstractmethod
     def item_key(self, row : list):
@@ -32,23 +40,39 @@ class DataStoreBase(abc.ABC):
 
     @abc.abstractmethod
     def overwrite(self, key : str, log : AccessLog):
-        '''Overwrite records, if any, associated with key
+        '''Overwrite records, if any, associated with key.
 
-        Default implementation is no-op
+        If no data exists in the store, create a new key-value
+        pair. Default implementation is no-op
 
-        @param TODO
-        @return TODO
+        @sa item_key
+
+        @param {str} key used to locate access log data
+        @param {AccessLog} log data to write
+        @return None
+
         '''
         return
 
     @abc.abstractmethod
-    def delete(self, **kwargs):
+    def delete(self, key):
         '''Delete all associated data with key
 
         Default implementation is no-op
 
+        @sa item_key
+        @param {str} key Key used to locate the accesslog
+        @return {bool} True if successful, false otherwise
+        '''
+        return False
+
+    def delete_list(self, **kwargs):
+        '''Delete all associated data with key
+
+        Default implementation uses defined `delete` function
+
         kwargs = {
-           Key(s):  Required
+           keys:  Required
         }
 
         @sa item_key
@@ -56,7 +80,8 @@ class DataStoreBase(abc.ABC):
         @return TODO
 
         '''
-        return
+        for k in keys:
+            self.delete(k)
 
     # nntd
     def grouper_generator(self):

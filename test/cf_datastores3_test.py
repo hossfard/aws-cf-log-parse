@@ -51,7 +51,7 @@ class TestDataStoreS3Class(unittest.TestCase):
         ]}
         store = DataStoreS3(bucket=bucket_name, session=self.session)
         store.s3.delete_objects = MagicMock()
-        store.delete_list(keys)
+        store.delete_list(keys=keys)
         store.s3.delete_objects.assert_called_with(Bucket=bucket_name,
                                                    Delete=delete_key_val)
 
@@ -61,7 +61,7 @@ class TestDataStoreS3Class(unittest.TestCase):
         keys = ['a', 'b', 'c', 'd']
         store = DataStoreS3(bucket=bucket_name, session=self.session)
         store.s3.delete_objects = MagicMock()
-        store.delete_list(keys, divide_count=2)
+        store.delete_list(keys=keys, divide_count=2)
         expected_calls = [
             call(Bucket=bucket_name,
                  Delete={'Objects': [{'Key': 'a'}, {'Key': 'b'}]}),
@@ -75,7 +75,7 @@ class TestDataStoreS3Class(unittest.TestCase):
         bucket_name = 'foo'
         store = DataStoreS3(bucket=bucket_name, session=self.session)
         self.assertEqual(store.item_key(row),
-                         'foo/2019/01/2019-01-02.gz')
+                         '2019/01/2019-01-02.gz')
 
     # TODO
     def test_overwrite(self):
