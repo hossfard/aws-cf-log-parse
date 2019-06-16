@@ -118,6 +118,20 @@ class TestDataStoreS3Class(unittest.TestCase):
         self.assertEqual(store.item_key(row),
                          '2019/01/2019-01-02.gz')
 
+    def test_item_key_withprefix(self):
+        row = ['2019-01-02', '13:10:10']
+        bucket_name = 'foo'
+        store = DataStoreS3(bucket=bucket_name, session=self.session, prefix='foo')
+        self.assertEqual(store.item_key(row),
+                         'foo/2019/01/2019-01-02.gz')
+
+    def test_item_key_withprefix2(self):
+        row = ['2019-01-02', '13:10:10']
+        bucket_name = 'foo'
+        store = DataStoreS3(bucket=bucket_name, session=self.session, prefix='foo/')
+        self.assertEqual(store.item_key(row),
+                         'foo/2019/01/2019-01-02.gz')
+
     # Test s3.put_object gets invoked with write arguments
     def test_overwrite(self):
         bucket_name = 'foo-bar'

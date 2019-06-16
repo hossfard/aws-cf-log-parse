@@ -39,7 +39,7 @@ def is_valid_cf_logkey(key):
     return (re.search('^\w{5,20}\.\d{4}-\d{2}-\d{2}-\d{2}\.\w{8}\.gz', key) != None)
 
 
-def list_cf_logkeys(s3, bucket : str):
+def list_cf_logkeys(s3, bucket : str, prefix : str = ''):
     '''Return the list of S3 keys under `bucket` representing CF access logs
 
     This is almost similar to running following AWS CLI command
@@ -56,7 +56,7 @@ def list_cf_logkeys(s3, bucket : str):
     @param {str} bucket AWS S3 bucket name
     @return {list} list of keys representing CF logs, maxed out at 1000
     '''
-    response = s3.list_objects_v2(Bucket=bucket)
+    response = s3.list_objects_v2(Bucket=bucket, Prefix = prefix)
     contents = response.get('Contents', [])
     ret = []
     return [obj['Key'] for obj in contents if (is_valid_cf_logkey(obj['Key']))]
@@ -66,13 +66,17 @@ class DataStoreS3(DataStoreBase):
     '''GZipped local data store, accessible by date in YYYY-mm-dd format
 
     '''
-    def __init__(self, bucket : str, session : boto3.Session = None):
+    def __init__(self, bucket : str, session : boto3.Session = None, prefix : str = ''):
         self.bucket = bucket
         if session is None:
             self.session = boto3.Session()
         else:
             self.session = session
         self.s3 = self.session.client('s3')
+
+        self.prefix = prefix
+        if (self.prefix != '') and (re.search('/$', self.prefix) is None):
+            self.prefix += '/'
 
     # tested
     def access_log(self, key : str):
@@ -98,9 +102,10 @@ class DataStoreS3(DataStoreBase):
         '''
         date_str = row[0]
         dt = datetime.strptime(date_str, '%Y-%m-%d')
-        return '{}/{}/{}.gz'.format(str(dt.year),
-                                    '{:02}'.format(dt.month),
-                                    date_str)
+        return '{}{}/{}/{}.gz'.format(self.prefix,
+                                      str(dt.year),
+                                      '{:02}'.format(dt.month),
+                                      date_str)
 
     # tested
     def overwrite(self, key : str, log : AccessLog):
