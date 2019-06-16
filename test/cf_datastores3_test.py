@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
-import unittest
-
+import os, io, sys
 import boto3
-import os, io, sys, itertools
+import unittest
 from unittest.mock import MagicMock, call
-
 
 __dirname = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(__dirname, '../src'))
