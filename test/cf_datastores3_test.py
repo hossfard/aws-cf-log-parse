@@ -11,6 +11,35 @@ __dirname = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(__dirname, '../src'))
 from cf_accesslog import AccessLog
 from cf_datastores3 import DataStoreS3
+import cf_datastores3 as DS3
+
+
+
+class TestDateStoreS3fn(unittest.TestCase):
+    def test_is_valid_cf_logkey(self):
+        test_data = [
+            {
+                'test': 'A3HR21C7CND2BQ.2019-06-09-17.ab3a8cd4.gz',
+                'expected': True
+            },
+            {
+                'test': 'B3HR21CSCND2BQ.2019-06-09-12.aa3a8ad4.gz',
+                'expected': True
+            },
+            {
+                'test': '2019-06-09-12.aa3a8ad4.gz',
+                'expected': False
+            },
+            {
+                'test': '2019-06-09.gz',
+                'expected': False
+            },
+        ]
+        for i, data in enumerate(test_data):
+            with self.subTest('Subtest {}'.format(i)):
+                result = DS3.is_valid_cf_logkey(data['test'])
+                expected = data['expected']
+                self.assertEqual(result, expected)
 
 
 class TestDataStoreS3Class(unittest.TestCase):

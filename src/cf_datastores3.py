@@ -1,4 +1,4 @@
-import io, os, itertools
+import io, os, itertools, re
 import botocore, boto3
 import cf_accesslog as AL
 from cf_datastore import DataStoreBase
@@ -23,6 +23,20 @@ def grouper(iterable, n, fillvalue=None):
     '''
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def is_valid_cf_logkey(key):
+    '''Determines if the S3 key is an expected log file
+
+    Expected key format is <distribution-id>.<%Y-%m-%d-%H>.<uniqueid>.gz
+
+    See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
+
+    @param {string} key S3 key
+    @return {boolean} true if key is log file, false otherwise
+    '''
+
+    return (re.search('^\w{5,20}\.\d{4}-\d{2}-\d{2}-\d{2}\.\w{8}\.gz', key) != None)
 
 
 class DataStoreS3(DataStoreBase):
