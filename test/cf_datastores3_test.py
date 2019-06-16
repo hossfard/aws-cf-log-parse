@@ -69,6 +69,20 @@ class TestDataStoreS3Class(unittest.TestCase):
         store_response = store.access_log('foo')
         store.s3.get_object.assert_called_with(Bucket=bucket_name, Key='foo')
 
+    # Test datastores3.delete gets delegated to delete_objects
+    def test_delete(self):
+        bucket_name = 'foo-bar'
+        keys = ['a']
+        delete_key_val = {'Objects': [
+            {
+                'Key': key
+            } for key in keys
+        ]}
+        store = DataStoreS3(bucket=bucket_name, session=self.session)
+        store.delete_list = MagicMock()
+        store.delete(keys[0])
+        store.delete_list.assert_called_with(keys=keys)
+
     # Test s3.delete_objects gets called
     def test_deletelist_list(self):
         bucket_name = 'foo-bar'

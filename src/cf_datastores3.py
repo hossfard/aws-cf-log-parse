@@ -119,13 +119,12 @@ class DataStoreS3(DataStoreBase):
                            Bucket = self.bucket,
                            Key = key)
 
-    # untested
     def delete(self, key : str):
         ''''Delete a single key
 
         @parma {str} key associated log to delete from the store
         '''
-        return self.delete_list([key], 800)
+        return self.delete_list(keys=[key])
 
     # tested
     def delete_list(self, **kwarg):
