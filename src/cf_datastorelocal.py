@@ -20,9 +20,13 @@ class DataStoreLocal(DataStoreBase):
         @sa item_key
 
         @param {str} key lookup key
-        @return {AccessLog} access log associated with the key, if any
+        @return {AccessLog} access log associated with the key, if
+                any, None otherwise
 
         '''
+        if not os.path.exists(key):
+            return None
+
         fd = gzip.open(key, 'r')
         return AccessLog.load(fd)
 

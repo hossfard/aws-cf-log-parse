@@ -53,8 +53,8 @@ if __name__ == '__main__':
     parser.add_argument('--bucket-prefix', type=str, default='',
                         help='Bucket content prefix')
     parser.add_argument('--delete-source', type=bool, default=False,
-                        choices=(True, False),
-                        help='Delete files from s3 once processed')
+                        nargs='?', const=True,
+                        help='Delete files from s3 if enabled')
     parser.add_argument('--profile', type=str, default=None,
                         help='AWS profile name under ~/.aws/credentials')
 

@@ -86,11 +86,14 @@ class DataStoreS3(DataStoreBase):
         Throws if no accesslog exists or connection to AWS fails.
 
         @param {string} key to file, relative to db_dir
-        @return {AccessLog} accesslog associatedwith the key
+        @return {AccessLog} accesslog associated with the key, None otherwise
 
         '''
         resp =  self.s3.get_object(Bucket=self.bucket, Key=key)
-        return AL.AccessLog.load(resp['Body'])
+        try:
+            return AL.AccessLog.load(resp['Body'])
+        except:
+            return None
 
     # tested
     def item_key(self, row : list):

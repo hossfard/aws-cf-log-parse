@@ -32,9 +32,8 @@ def archive(keys : list, InDataStore, OutDataStore, delete_from_instore : bool =
         print ('processing {}'.format(key))
 
         # Fetch the object
-        try:
-            access_log = InDataStore.access_log(key)
-        except:
+        access_log = InDataStore.access_log(key)
+        if access_log is None:
             continue
 
         if log is None:
@@ -53,8 +52,13 @@ def archive(keys : list, InDataStore, OutDataStore, delete_from_instore : bool =
         delete_list.append(key)
 
     # Dump remainder data to file
-    out_key = OutDataStore.item_key(log.rows[0])
-    OutDataStore.overwrite(out_key, log)
+    if log.record_count() > 0:
+        out_key = OutDataStore.item_key(log.rows[0])
+        existing_rec = OutDataStore.access_log(out_key)
+        if existing_rec is not None:
+            log.concatenate(existing_rec)
+        log.sort().remove_duplicates()
+        OutDataStore.overwrite(out_key, log)
 
     if delete_from_instore:
         InDataStore.delete_list(keys=delete_list)

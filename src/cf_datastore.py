@@ -20,7 +20,7 @@ class DataStoreBase(abc.ABC):
         @sa item_key
         @param {str} key key used to identifiy access log record
         @return {AccessLog} acesslog record associated with the key,
-                if any
+                if any. Return None if no records exist
 
         '''
         return None
