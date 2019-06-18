@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, io, sys
+import os, io, sys, gzip
 import boto3
 import unittest
 from unittest.mock import MagicMock, call
@@ -134,17 +134,20 @@ class TestDataStoreS3Class(unittest.TestCase):
             ['2019-01-01', '15:13:10'],
             ['2019-01-01', '15:14:10']
         ])
-        expected_data = bytearray('Version: 1.0\n', 'utf-8') \
-            + bytearray('#Fields: date time\n', 'utf-8') \
-            + bytearray('2019-01-01\t15:12:10\n', 'utf-8') \
-            + bytearray('2019-01-01\t15:13:10\n', 'utf-8') \
-            + bytearray('2019-01-01\t15:14:10\n', 'utf-8')
+        expected_data = io.BytesIO()
+        fo = gzip.open(expected_data, 'wb')
+        fo.write(bytearray('Version: 1.0\n', 'utf-8') \
+                 + bytearray('#Fields: date time\n', 'utf-8') \
+                 + bytearray('2019-01-01\t15:12:10\n', 'utf-8') \
+                 + bytearray('2019-01-01\t15:13:10\n', 'utf-8') \
+                 + bytearray('2019-01-01\t15:14:10\n', 'utf-8'))
+        fo.close()
         store.s3.put_object = MagicMock()
         key = store.item_key(['2019-01-01', '15:12:10'])
         store.overwrite(key, log)
         store.s3.put_object.assert_called_with(Bucket=bucket_name,
                                                ACL = 'private',
-                                               Body = expected_data,
+                                               Body = expected_data.getvalue(),
                                                Key=key)
 
     # Test s3.list_objects_v2 is called with right arguments

@@ -1,4 +1,4 @@
-import io, os, itertools, re
+import io, os, itertools, re, gzip
 import botocore, boto3
 import cf_accesslog as AL
 from cf_datastore import DataStoreBase
@@ -86,8 +86,8 @@ class DataStoreS3(DataStoreBase):
         @return {AccessLog} accesslog associated with the key, None otherwise
 
         '''
-        resp =  self.s3.get_object(Bucket=self.bucket, Key=key)
         try:
+            resp =  self.s3.get_object(Bucket=self.bucket, Key=key)
             return AL.AccessLog.load(resp['Body'])
         except:
             return None
@@ -116,9 +116,11 @@ class DataStoreS3(DataStoreBase):
                      generated through item_key
         @param {AccessLog} log accesslog to overwrite existing content
         '''
-        bytes = io.BytesIO()
-        log.dump(bytes)
-        self.s3.put_object(Body = bytes.getvalue(),
+        bytes_ = io.BytesIO()
+        fd = gzip.open(bytes_, 'wb')
+        log.dump(fd)
+        fd.close()
+        self.s3.put_object(Body = bytes_.getvalue(),
                            ACL = 'private',
                            Bucket = self.bucket,
                            Key = key)
