@@ -221,7 +221,6 @@ class TestAccessLogClass(unittest.TestCase):
         log.remove_duplicates()
         self.assertEqual(log.rows, expected_rows)
 
-
     def test_group_by_date_generator(self):
         headers = ['date', 'time']
         data = [
@@ -252,6 +251,20 @@ class TestAccessLogClass(unittest.TestCase):
         ]
         for i, sub in enumerate(AL.group_by_date_generator(log)):
             self.assertEqual(sub.rows, expected_rows[i])
+
+    def test_select(self):
+        data = [['2019-01-01', '15:12:10'],
+                ['2019-01-01', '15:13:10'],
+                ['2019-01-01', '15:13:10'],
+                ['2019-01-01', '15:18:10'],
+                ['2019-01-01', '15:20:10'],
+                ['2019-01-02', '15:23:10']]
+        log = AL.AccessLog('1.0', ['date', 'time'], data)
+        ret = log.select('*', {'time': '15:1[0-9]*'})
+        self.assertEqual(ret.rows, [['2019-01-01', '15:12:10'],
+                                    ['2019-01-01', '15:13:10'],
+                                    ['2019-01-01', '15:13:10'],
+                                    ['2019-01-01', '15:18:10']])
 
 
 if __name__ == '__main__':

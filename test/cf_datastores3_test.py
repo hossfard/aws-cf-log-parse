@@ -121,18 +121,11 @@ class TestDataStoreS3Class(unittest.TestCase):
     def test_item_key_withprefix(self):
         row = ['2019-01-02', '13:10:10']
         bucket_name = 'foo'
-        store = DataStoreS3(bucket=bucket_name, session=self.session, prefix='foo')
-        self.assertEqual(store.item_key(row),
-                         'foo/2019/01/2019-01-02.gz')
-
-    def test_item_key_withprefix2(self):
-        row = ['2019-01-02', '13:10:10']
-        bucket_name = 'foo'
         store = DataStoreS3(bucket=bucket_name, session=self.session, prefix='foo/')
         self.assertEqual(store.item_key(row),
                          'foo/2019/01/2019-01-02.gz')
 
-    # Test s3.put_object gets invoked with write arguments
+    # Test s3.put_object gets invoked with right arguments
     def test_overwrite(self):
         bucket_name = 'foo-bar'
         store = DataStoreS3(bucket=bucket_name, session=self.session)
@@ -153,6 +146,27 @@ class TestDataStoreS3Class(unittest.TestCase):
                                                ACL = 'private',
                                                Body = expected_data,
                                                Key=key)
+
+    # Test s3.list_objects_v2 is called with right arguments
+    def test_list_keys(self):
+        bucket_name = 'foo-bar'
+        prefix = 'pre'
+        store = DataStoreS3(bucket=bucket_name, session=self.session, prefix=prefix)
+        store.s3.list_objects_v2 = MagicMock()
+        keys = store.list_keys()
+        store.s3.list_objects_v2.assert_called_with(Bucket=bucket_name, Prefix=prefix)
+
+
+    # Test list_keys_ranged gets called with right arguments
+    def test_list_keys_ranged(self):
+        bucket_name = 'foo-bar'
+        prefix = 'pre'
+        store = DataStoreS3(bucket=bucket_name, session=self.session, prefix=prefix)
+        store.s3.list_objects_v2 = MagicMock()
+        store.list_keys_ranged = MagicMock()
+        keys = store.list_keys(date_range=['2019-01-01', '2019-01-03'])
+        store.list_keys_ranged.assert_called_with('2019-01-01', '2019-01-03')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

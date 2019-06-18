@@ -170,3 +170,57 @@ class DataStoreS3(DataStoreBase):
 
         return True
 
+
+    def list_keys_ranged(self, t0 : str, t1 : str):
+        ''' Return keys corresponding to archived data in [t0, t1]
+
+        t0 and t1 must be in YYYY-mm-dd format
+
+        Will look up only the first 1000 keys
+
+        @param {str} t0 starting date in YYYY-mm-dd format
+        @param {str} t1 end date in YYYY-mm-dd format
+        @return {list} sorted list of the keys with data in [t0, t1]
+        '''
+        keys = self.list_keys()
+
+        t0_dt = datetime.strptime(t0, '%Y-%m-%d')
+        t1_dt = datetime.strptime(t1, '%Y-%m-%d')
+        ret = []
+        for k in keys:
+            match = re.search('(\d{4}-\d{2}-\d{2}).gz', k)
+            dt = datetime.strptime(match.group(1), '%Y-%m-%d')
+            if (dt >= t0_dt) and (dt <= t1_dt):
+                ret.append(k)
+        return sorted(ret)
+
+    def list_keys(self, **kwargs):
+        '''TODO Actually these are not the same stored files
+
+        This is almost similar to running following AWS CLI command
+
+        > aws s3api list-objects-v2 --bucket <bucket-name> --prefix <prefix>
+
+        Given the response, this method filters out the returned keys
+        to what it deems to be valid accesslog data using only the
+        names
+
+        It will return only the first 1000 if there are more keys.
+
+        @param kwargs: Unused
+        @return {list} list of available keys, maxed out at 1000
+
+        '''
+        if 'date_range' in kwargs:
+            r = kwargs['date_range']
+            return self.list_keys_ranged(r[0], r[1])
+
+        response = self.s3.list_objects_v2(Bucket=self.bucket, Prefix=self.prefix)
+        contents = response.get('Contents', [])
+        ret = []
+        for obj in contents:
+            key = obj['key']
+            if (is_valid_cf_logkey(key)):
+                ret.append(key)
+        return sorted(ret)
+

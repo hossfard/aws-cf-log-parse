@@ -72,15 +72,35 @@ def parse(fd):
     return ver, heads, table
 
 
-def query(col, q):
-    def wrap(func):
-        def selector(row, headerMap, index):
-            if (re.search(q, row[headerMap[col]]) == None):
-                return False
-            else:
-                return func(row, headerMap, index)
-        return selector
-    return wrap
+class AccessLogQuery():
+    def __init__(self, rows, headers):
+        self.rows = rows
+        self.headers = headers
+
+    def concatenate(self, other):
+        self.rows += other.rows
+        return self
+
+    def display(self):
+        print(', '.join(self.headers))
+        for r in self.rows:
+            print(' | '.join(r))
+
+
+def query_match(row, conditions):
+    '''Determine if condtions in row are satisified
+
+    @param {list} row list of column values
+    @param {dict} conditions key-value map, where key is the row
+                  index, and value is the corresponding regex search
+                  value
+
+    '''
+    ret = []
+    for index, expr in conditions.items():
+        if re.search(expr, row[index]) is None:
+            return False
+    return True
 
 
 class AccessLog():
@@ -170,13 +190,6 @@ class AccessLog():
         self.rows += other.rows
         return self
 
-    # def select(self, query):
-    #     ret_rows = []
-    #     for i,row in enumerate(self.rows):
-    #         if query(row, self.column_map, i):
-    #             ret_rows.append(row)
-    #     return AccessLog(self.version, self.headers, ret_rows)
-
     def remove_duplicates(self):
         '''
 
@@ -233,6 +246,7 @@ class AccessLog():
         @param {gzip.file} fd gzip file descriptor
         @param {bool} sort_data if true, sorts data before dumping
         @return None
+
         '''
         if (sort_data):
             self.sort()
@@ -242,6 +256,39 @@ class AccessLog():
                            'utf-8'))
         for row in self.rows:
             fd.write(bytearray('{}\n'.format('\t'.join(row)), 'utf-8'))
+
+    def select(self, columns, conditions):
+        '''Return specified columns matching conditions
+
+        @param {list} columns names to include in results. Use `*` to
+                      include all
+        @param {dict} conditions column-regex key-value pairs to serve
+                      as WHERE clause
+        @return {AccessLogQuery} results matching the query or None
+
+        '''
+
+        if (columns == '*') or (columns == '[*]'):
+            columns = self.headers
+
+        # Convert column names to column index numbers in the
+        # input 'condition' map
+        ret = []
+        indexed_conditions = {}
+        for c,v in conditions.items():
+            col = self.column_map[c]
+            expr = v
+            indexed_conditions[col] = expr
+
+        # Column numbers of the subset to pick
+        select_cols = [self.column_map[x] for x in columns]
+        # Filter the results row by row
+        _rows = []
+        for row in self.rows:
+            if not query_match(row, indexed_conditions):
+                continue
+            _rows.append([row[x] for x in select_cols])
+        return AccessLogQuery(_rows, columns)
 
 
 def group_by_date_generator(access_log : AccessLog):

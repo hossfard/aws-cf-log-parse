@@ -1,4 +1,4 @@
-import os, gzip, glob
+import os, gzip, glob, re
 from cf_datastore import DataStoreBase
 from cf_accesslog import AccessLog
 from datetime import datetime
@@ -29,7 +29,6 @@ class DataStoreLocal(DataStoreBase):
 
         fd = gzip.open(key, 'r')
         return AccessLog.load(fd)
-
 
     def item_key(self, row : list):
         '''Return key used for locating a row in a CF access log
@@ -65,18 +64,40 @@ class DataStoreLocal(DataStoreBase):
         fd = gzip.open(key, 'wb')
         log.dump(fd)
 
+    def list_keys_ranged(self, t0 : str, t1 : str):
+        # Fetch all keys
+        keys = self.list_keys()
+        # Filter keys outside the range
+        t0_dt = datetime.strptime(t0, '%Y-%m-%d')
+        t1_dt = datetime.strptime(t1, '%Y-%m-%d')
+        ret = []
+        for k in keys:
+            match = re.search('(\d{4}-\d{2}-\d{2}).gz', k)
+            dt = datetime.strptime(match.group(1), '%Y-%m-%d')
+            if (dt >= t0_dt) and (dt <= t1_dt):
+                ret.append(k)
+        return sorted(ret)
+
     def list_keys(self, **kwargs):
         '''Return list of available keys in store
 
         @sa item_key
         @sa access_log
 
-        @param kwargs Unused
+        @param kwargs {
+           date_range = [t0, t1]
+        }
+
         @return {list} Full list of available keys
 
         '''
+        if 'date_range' in kwargs:
+            r = kwargs['date_range']
+            return self.list_keys_ranged(r[0], r[1])
+
         p = os.path.join(self.db_dir, '**/*.gz')
-        return glob.glob(p, recursive=True)
+        ret = glob.glob(p, recursive=True)
+        return sorted(ret)
 
     def delete(self, key : str):
         ''' Remove records associated with `key`, if any

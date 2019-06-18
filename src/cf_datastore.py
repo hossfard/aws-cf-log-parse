@@ -3,6 +3,7 @@ import botocore, boto3
 import cf_accesslog as AL
 from cf_accesslog import AccessLog
 
+from cf_accesslogselector import AccessLogSelector
 
 
 class DataStoreBase(abc.ABC):
@@ -53,6 +54,17 @@ class DataStoreBase(abc.ABC):
 
         '''
         return
+
+    def list_keys(self, **kwargs):
+        '''Return the list of available keys
+
+        Default implemntation returls an empty list
+
+        @sa item_key
+        @param {kwargs} unused
+        @return {list} List of keys that can be used to access records
+        '''
+        return []
 
     @abc.abstractmethod
     def delete(self, key):
@@ -130,3 +142,6 @@ class DataStoreBase(abc.ABC):
             location_key = self.item_key(log.rows[0])
             self.overwrite(location_key, log)
         return
+
+    def select(self, columns):
+        return AccessLogSelector(columns, self)
