@@ -79,7 +79,6 @@ class DataStoreS3(DataStoreBase):
         if (self.prefix != '') and (re.search('/$', self.prefix) is None):
             self.prefix += '/'
 
-    # tested
     def access_log(self, key : str):
         '''Keys must dates in YYYY-MM-DD format
 
@@ -95,7 +94,6 @@ class DataStoreS3(DataStoreBase):
         except:
             return None
 
-    # tested
     def item_key(self, row : list):
         '''Return the key associated with the record (or would be record)
 
@@ -111,7 +109,6 @@ class DataStoreS3(DataStoreBase):
                                       '{:02}'.format(dt.month),
                                       date_str)
 
-    # tested
     def overwrite(self, key : str, log : AccessLog):
         '''Overwrite existing data associated with `key
 
@@ -135,7 +132,6 @@ class DataStoreS3(DataStoreBase):
         '''
         return self.delete_list(keys=[key])
 
-    # tested
     def delete_list(self, **kwarg):
         '''Delete list of keys
 

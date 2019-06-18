@@ -191,7 +191,12 @@ class AccessLog():
         return self
 
     def remove_duplicates(self):
-        '''
+        '''Remove duplicate keys
+
+        Duplicates are identified if they have the same date, time and
+        request ids
+
+        @return {AccessLog} self with duplicate entries removed
 
         '''
         od = OrderedDict()
@@ -210,10 +215,11 @@ class AccessLog():
         return self
 
     def pop(self, selector):
-        '''
+        '''Remove elements from list that satisy selector function
 
         @param {function} selector
         @return {AccessLog} accesslog satisfying selector
+
         '''
         new_rows = []
         del_list = []
@@ -233,11 +239,20 @@ class AccessLog():
         return AccessLog(self.version, self.headers, new_rows)
 
     def row_datetime(self, row_index):
+        ''' Return date time object of the specified row
+
+        @param {integer} row_index row index
+        @return {datetime} date time object
+        '''
         date_string = '{} {}'.format(self.rows[row_index][self.date_col],
                                      self.rows[row_index][self.time_col])
         return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 
     def record_count(self):
+        ''' Return the number of records (Rows) in the current log
+
+        @return (int) row number
+        '''
         return len(self.rows)
 
     def dump(self, fd, sort_data=True):

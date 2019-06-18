@@ -2,7 +2,6 @@ import os, itertools, abc
 import botocore, boto3
 import cf_accesslog as AL
 from cf_accesslog import AccessLog
-
 from cf_accesslogselector import AccessLogSelector
 
 
@@ -89,13 +88,13 @@ class DataStoreBase(abc.ABC):
 
         @sa item_key
         @param {str} key Key used to locate the accesslog
-        @return TODO
+        @return True if successful, false otherwise
 
         '''
         for k in keys:
             self.delete(k)
+        return True
 
-    # nntd
     def grouper_generator(self):
         '''Generator specifying how records are grouped in storage
 
@@ -107,7 +106,6 @@ class DataStoreBase(abc.ABC):
         '''
         return AL.group_by_date_generator
 
-    # u
     def store(self, access_log : AccessLog):
         '''Write accesslog data to file
 
