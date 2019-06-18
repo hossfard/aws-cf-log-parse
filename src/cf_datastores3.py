@@ -76,8 +76,6 @@ class DataStoreS3(DataStoreBase):
         self.s3 = self.session.client('s3')
 
         self.prefix = prefix
-        if (self.prefix != '') and (re.search('/$', self.prefix) is None):
-            self.prefix += '/'
 
     def access_log(self, key : str):
         '''Keys must dates in YYYY-MM-DD format
