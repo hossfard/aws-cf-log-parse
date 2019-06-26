@@ -46,18 +46,25 @@ def s3_to_local(bucket : str, db_path : str = '',
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Archive CF logs to local drive')
 
-    parser.add_argument('--bucket', type=str, required=True,
-                        help='S3 source bucket name')
-    parser.add_argument('--dbpath', type=str, required=True,
-                        help='Location on local drive to archive')
-    parser.add_argument('--bucket-prefix', type=str, default='',
-                        help='Bucket content prefix')
-    parser.add_argument('--delete-source', type=bool, default=False,
-                        nargs='?', const=True,
-                        help='Delete files from s3 if enabled')
-    parser.add_argument('--profile', type=str, default=None,
-                        help='AWS profile name under ~/.aws/credentials')
+    # generate better help text
+    parser._action_groups.pop()
+    required = parser.add_argument_group('required arguments')
+    optional = parser.add_argument_group('optional arguments')
 
+    # required input
+    required.add_argument('--bucket', '-i', type=str, required=True,
+                          help='S3 source bucket name')
+    required.add_argument('--dbpath', '-o', type=str, required=True,
+                        help='Location on local drive to archive')
+
+    # optional input
+    optional.add_argument('--bucket-prefix', '-p', type=str,
+                          default='', help='S3 source bucket prefix')
+    optional.add_argument('--profile', type=str, default=None,
+                          help='AWS profile name under ~/.aws/credentials')
+    optional.add_argument('--delete-source', default=False,
+                          action='store_true',
+                          help='Delete files from S3 once processed')
     args = parser.parse_args()
     db_path = os.path.join(os.getcwd(), args.dbpath)
 
