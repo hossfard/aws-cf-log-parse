@@ -115,7 +115,7 @@ Note:
 
 ## Simple query
 
-See [examples/query_recent.py](examples/query_recenty.py):
+See [examples/query_recent.py](examples/query_recent.py):
 
 ```python
 t0 = datetime.strftime(datetime.utcnow() - timedelta(1), '%Y-%m-%d')
@@ -131,10 +131,16 @@ store = DataStoreLocal(archive_path)
 # conditions matched using regex
 res = store.select(['date', 'time', 'c-ip', 'cs-uri-stem', 'cs(User-Agent)']) \
            .where({'sc-status': '200',
-                   'c-ip', '123\.456\.*}) \ # re.regex compatible expression
-           .daterange([t0, t1]) \           # Must be in YYYY-mm-dd format
-           .execute()                       # Run the query
-res.display()                               # Dump results to stdout
+                   'c-ip': '123\.456\.*'})
+           .daterange([t0, t1])
+           .execute()
+
+# Explanation:
+#  .where(dict) re.regex compatible expression map
+#  .daterange([t0, t1]) must be in YYYY-mm-dd format
+#  .executre() run the query
+
+res.display()   # Dump results to stdout
 ```
 
 # Known Limitations
