@@ -38,7 +38,7 @@ After
            +-- month2
            |   |-- year2-month2-dd1.gz
            |   |-- year2-month2-dd2.gz
-           |   +-- year2-month2-dd3gz
+           |   +-- year2-month2-dd3.gz
            +-- ...
 ```
 
@@ -131,8 +131,8 @@ store = DataStoreLocal(archive_path)
 # conditions matched using regex
 res = store.select(['date', 'time', 'c-ip', 'cs-uri-stem', 'cs(User-Agent)']) \
            .where({'sc-status': '200',
-                   'c-ip': '123\.456\.*'})
-           .daterange([t0, t1])
+                   'c-ip': '123\.456\.*'}) \
+           .daterange([t0, t1]) \
            .execute()
 
 # Explanation:

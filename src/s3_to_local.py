@@ -7,7 +7,6 @@ from cf_datastorelocal import DataStoreLocal
 from cf_datastores3 import DataStoreS3
 
 
-# TODO: use prefix and specify local db path
 def s3_to_local(bucket : str, db_path : str = '',
                 delete_source : bool = False,
                 bucket_prefix : str = '', profile : str = None):

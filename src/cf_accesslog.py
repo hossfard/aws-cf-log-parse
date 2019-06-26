@@ -12,7 +12,6 @@ __TIME_COL = 1
 __REQID_COL = 14
 
 
-# used -- explicitely tested
 def __version(fd):
     ret = ''
     line = next(iter(fd))#.readline()
@@ -21,13 +20,11 @@ def __version(fd):
         return ''
     return split[1]
 
-# used
 def sort_fn(row):
     date_string = '{} {}'.format(row[__DATE_COL], row[__TIME_COL])
     return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 
 
-# Used -- explicitely tested
 def __headers(fd, ver):
     if ver != '1.0':
         return []
@@ -38,7 +35,6 @@ def __headers(fd, ver):
     return fields[1:]
 
 
-# used -- explicitely tested
 def __rows(fd, version):
     '''Generator yielding rows from a text-encoded file-like descriptor
     for accesslog
@@ -58,7 +54,6 @@ def __rows(fd, version):
         yield line.rstrip().split('\t')
 
 
-# implicitely tested
 def parse(fd):
     # Turn into generator if not a generator
     fdi = iter(fd)
