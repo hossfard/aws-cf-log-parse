@@ -45,7 +45,6 @@ class AccessLogSelector():
         else:
             list_keys = self.store.list_keys(date_range=self.drange)
 
-        records = []
         ret = None
         for k in list_keys:
             log = self.store.access_log(k)

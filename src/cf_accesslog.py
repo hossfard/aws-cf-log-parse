@@ -6,15 +6,13 @@ from gzip import GzipFile
 from datetime import datetime
 
 
-
 __DATE_COL = 0
 __TIME_COL = 1
 __REQID_COL = 14
 
 
 def __version(fd):
-    ret = ''
-    line = next(iter(fd))#.readline()
+    line = next(iter(fd))
     split = line.rstrip().split(' ')
     if len(split) <= 1:
         return ''
@@ -29,7 +27,7 @@ def __headers(fd, ver):
     if ver != '1.0':
         return []
 
-    line = next(iter(fd))#.readline()
+    line = next(iter(fd))
     fields = line.rstrip().split(' ')
     # ignore the #fields item
     return fields[1:]
@@ -91,7 +89,6 @@ def query_match(row, conditions):
                   value
 
     '''
-    ret = []
     for index, expr in conditions.items():
         if re.search(expr, row[index]) is None:
             return False
@@ -118,11 +115,11 @@ class AccessLog():
         for i, h in enumerate(self.headers):
             self.column_map[h] = i
 
-    def cell(self, index : int, column : str):
+    def cell(self, index: int, column: str):
         column_index = self.column_map[column]
         return self.rows[index][column_index]
 
-    def column(self, column : str):
+    def column(self, column: str):
         column_index = self.column_map[column]
         ret = []
         for row in self.rows:
@@ -165,7 +162,6 @@ class AccessLog():
         self.rows = sorted(self.rows, key=sort_fn)
         return self
 
-
     def concatenate(self, other):
         '''Concatenate other log to existing log
 
@@ -203,7 +199,7 @@ class AccessLog():
             od[key] = row
 
         uniques = []
-        for k,row in od.items():
+        for k, row in od.items():
             uniques.append(row)
 
         self.rows = uniques
@@ -219,7 +215,7 @@ class AccessLog():
         new_rows = []
         del_list = []
         # Fetch list of items to be removed
-        for i,r in enumerate(self.rows):
+        for i, r in enumerate(self.rows):
             select, cont = selector(r)
             if select:
                 new_rows.append(r)
@@ -283,9 +279,8 @@ class AccessLog():
 
         # Convert column names to column index numbers in the
         # input 'condition' map
-        ret = []
         indexed_conditions = {}
-        for c,v in conditions.items():
+        for c, v in conditions.items():
             col = self.column_map[c]
             expr = v
             indexed_conditions[col] = expr
@@ -301,7 +296,7 @@ class AccessLog():
         return AccessLogQuery(_rows, columns)
 
 
-def group_by_date_generator(access_log : AccessLog):
+def group_by_date_generator(access_log: AccessLog):
     '''Generator for outputting records from the same date
 
     Starts at the top of the log, and yields logs that have the same
@@ -333,7 +328,7 @@ def group_by_date_generator(access_log : AccessLog):
                         rec_buffer)
 
 
-def pop_first_differing_dates(log : AccessLog):
+def pop_first_differing_dates(log: AccessLog):
     '''Remove first set of records that have the same date different from
     others
 
@@ -354,5 +349,5 @@ def pop_first_differing_dates(log : AccessLog):
     if (tN == t0):
         return None
 
-    selector = lambda row : (row[0] == t0, row[0] == t0)
+    selector = lambda row: (row[0] == t0, row[0] == t0)
     return log.pop(selector)
