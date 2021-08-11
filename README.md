@@ -15,7 +15,7 @@ Before
     +-- <id>.2019-06-21-17.2382979.gz
     +-- <id>.2019-06-21-17.2797113.gz
     +-- <id>.2019-06-21-17.3273923.gz
-    +--....
+    +-- ...
     +-- <id>.2019-06-22-17.273h0a4.gz
     +-- <id>.2019-06-22-17.978h0a2.gz
     +-- ...
@@ -51,7 +51,7 @@ After
 
 ## Archive s3 to local drive
 
-```
+```bash
 src/s3_to_local.py --help
 ```
 
@@ -105,7 +105,7 @@ where
 - `outbucket-prefix` prefix, if any, of the written buckets
 - `delete-source` if invoked, deletes files from S3 once processed
 - `profile` (default='') AWS named profile. Must have read/delete
-            accessto AWS bucket
+            access to AWS bucket
 
 Note:
 - Current implementation is not be optimal since it will process only
