@@ -52,13 +52,13 @@ After
 ## Archive s3 to local drive
 
 ```bash
-src/s3_to_local.py --help
+python3 -m awslogparse.s3_to_local --help
 ```
 
 or
 
 ```bash
-src/s3_to_local.py --bucket bucket-name \
+python3 -m awslogparse.s3_to_local --bucket bucket-name \
      --dbpath path/to/local/archive/dir \
      --bucket-prefix log-prefixes \ # Optional, defaults to ''
      --delete-source              \ # Optional, if invoked, deletes s3 content
@@ -85,12 +85,12 @@ Notes:
 ## Archive s3 to s3
 
 ```bash
-python3 examples/s3_to_s3.py --help
+python3 -m examples.s3_to_s3 --help
 ```
 or
 
 ```bash
-examples/s3_to_s3.py --inbucket inbound-bucket-name \
+python3 -m examples.s3_to_s3 --inbucket inbound-bucket-name \
     --outbucket outbound-bucket-name \
     --inbucket-prefix inbound-bucket-prefix \   # Optional
     --outbucket-prefix outbound-bucket-prefix \ # Optional
