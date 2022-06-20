@@ -1,9 +1,9 @@
 import io, os, itertools, re, gzip
-import botocore, boto3
-import cf_accesslog as AL
-from cf_datastore import DataStoreBase
-from cf_accesslog import AccessLog
 from datetime import datetime
+import botocore, boto3
+from . import cf_accesslog as AL
+from .cf_datastore import DataStoreBase
+from .cf_accesslog import AccessLog
 
 
 

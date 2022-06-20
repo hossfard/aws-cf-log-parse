@@ -1,8 +1,8 @@
 import os, itertools, abc
 import botocore, boto3
-import cf_accesslog as AL
-from cf_accesslog import AccessLog
-from cf_accesslogselector import AccessLogSelector
+from . import cf_accesslog as AL
+from .cf_accesslog import AccessLog
+from .cf_accesslogselector import AccessLogSelector
 
 
 class DataStoreBase(abc.ABC):

@@ -5,11 +5,9 @@ import boto3
 import unittest
 from unittest.mock import MagicMock, call
 
-__dirname = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(__dirname, '../src'))
-from cf_accesslog import AccessLog
-from cf_datastores3 import DataStoreS3
-import cf_datastores3 as DS3
+from awslogparse.cf_accesslog import AccessLog
+from awslogparse.cf_datastores3 import DataStoreS3
+from awslogparse import cf_datastores3 as DS3
 
 
 

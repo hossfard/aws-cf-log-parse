@@ -5,9 +5,7 @@ import unittest
 from unittest.mock import MagicMock
 from unittest.mock import call
 
-__dirname = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(__dirname, '../src'))
-import cf_accesslog as AL
+from awslogparse import cf_accesslog as AL
 
 
 class TestAccessLogModule(unittest.TestCase):

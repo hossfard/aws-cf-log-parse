@@ -1,6 +1,6 @@
 import os, gzip, glob, re
-from cf_datastore import DataStoreBase
-from cf_accesslog import AccessLog
+from .cf_datastore import DataStoreBase
+from .cf_accesslog import AccessLog
 from datetime import datetime
 
 

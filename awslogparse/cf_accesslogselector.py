@@ -1,4 +1,4 @@
-from cf_accesslog import AccessLog
+from .cf_accesslog import AccessLog
 
 
 
