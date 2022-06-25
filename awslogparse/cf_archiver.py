@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import cf_accesslog as AL
+from . import cf_accesslog as AL
 
 
 

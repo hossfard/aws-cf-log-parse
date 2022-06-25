@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
 import os, sys, argparse, boto3
-import cf_datastores3 as DS3
-import cf_archiver as archiver
-from cf_datastorelocal import DataStoreLocal
-from cf_datastores3 import DataStoreS3
+from . import cf_datastores3 as DS3
+from . import cf_archiver as archiver
+from .cf_datastorelocal import DataStoreLocal
+from .cf_datastores3 import DataStoreS3
 
 
 def s3_to_local(bucket : str, db_path : str = '',
